@@ -12,15 +12,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testing.swagger_spring_security.dto.CustomerDTO;
 import com.testing.swagger_spring_security.service.CustomerService;
 import com.testing.swagger_spring_security.util.Views;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -39,22 +35,34 @@ public class CustomerController {
 	}
 
 	@ApiOperation(value = "createCustomer", tags = "customer", response = Iterable.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Creating success."),
-			@ApiResponse(code = 400, message = "Creating fail.") })
 	@RequestMapping(method = RequestMethod.POST, value = "/create")
 	public CustomerDTO createCustomer(
 			@RequestBody @JsonView(value = Views.UserView.Request.class) CustomerDTO customerDto) {
 		CustomerDTO result = custService.createCustomer(customerDto);
 		return result;
 	}
-	
+
 	@ApiOperation(value = "findCustomer", tags = "customer", response = Iterable.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Valid Customer."),
-			@ApiResponse(code = 400, message = "Invalid Customer.") })
 	@RequestMapping(method = RequestMethod.POST, value = "/get/{id}")
 	public CustomerDTO findCustomer(@PathVariable Long id) {
 		CustomerDTO result = custService.getById(id);
 		return result;
+	}
+
+	@ApiOperation(value = "updateCustomer", tags = "customer", response = Iterable.class)
+	@RequestMapping(method = RequestMethod.POST, value = "/update/{id}")
+	public CustomerDTO updateCustomer(
+			@RequestBody @JsonView(value = Views.UserView.Request.class) CustomerDTO customerDto,
+			@PathVariable(required = true) Long id) {
+		customerDto.setId(id);
+		CustomerDTO result = custService.updateCustomer(customerDto);
+		return result;
+	}
+
+	@ApiOperation(value = "deleteCustomer", tags = "customer", response = Iterable.class)
+	@RequestMapping(method = RequestMethod.POST, value = "/delete/{id}")
+	public void deleteCustomer(@PathVariable(required = true) Long id) {
+		custService.deleteCustomer(id);
 	}
 
 }
