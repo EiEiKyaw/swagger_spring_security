@@ -50,7 +50,7 @@ public class SecurityConfig {
 				.permitAll()
 				.and()
 				.authorizeHttpRequests()
-				.antMatchers("/customer/**")
+				.antMatchers("/customer/**", "/mail/**")
 				.authenticated()
 				.and()
 				.sessionManagement()
@@ -84,7 +84,7 @@ public class SecurityConfig {
 		return new OpenAPI().addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
 				.components(new Components().addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()))
 				.info(new Info().title("My REST API").description("Some custom description of API.").version("1.0")
-						.contact(new Contact().name("Ei Ei Kyae").email("eieikyaw20101968@gmail.com")
+						.contact(new Contact().name("Ei Ei Kyaw").email("eieikyaw20101968@gmail.com")
 								.url("eieikyaw20101968@gmail.com"))
 						.license(new License().name("License of API").url("API license URL")));
 	}
