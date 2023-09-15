@@ -24,7 +24,7 @@ public class CustomerDTO {
 	@JsonView(value = { Views.UserView.Response.class })
 	private Long id;
 
-	@JsonView(value = { Views.UserView.Request.class })
+	@JsonView(value = { Views.UserView.Request.class, Views.UserView.Auth.class })
 	@NotBlank
 	@Size(min = 3, max = 20)
 	private String name;
@@ -32,7 +32,7 @@ public class CustomerDTO {
 	@JsonView(value = { Views.UserView.Request.class })
 	private String address;
 
-	@JsonView(value = { Views.UserView.Request.class })
+	@JsonView(value = { Views.UserView.Request.class, Views.UserView.Auth.class })
 	private String phone;
 
 	@JsonView(value = { Views.UserView.Request.class })

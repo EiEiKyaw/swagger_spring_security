@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +19,7 @@ import com.testing.swagger_spring_security.dto.CustomerDTO;
 import com.testing.swagger_spring_security.service.CustomerService;
 import com.testing.swagger_spring_security.util.Views;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -30,20 +34,24 @@ public class CustomerController {
 	@ApiOperation(value = "getCustomerList", tags = "customer")
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseStatus(HttpStatus.OK)
-	public List<CustomerDTO> getCustomerList() {
+	@PreAuthorize("hasAuthority('NORMAL')")
+	public List<CustomerDTO> getCustomerList() throws AccessDeniedException, ExpiredJwtException {
 		return custService.getAll();
 	}
 
-	@ApiOperation(value = "createCustomer", tags = "customer", response = Iterable.class)
+	@ApiOperation(value = "createCustomer", tags = "customer")
 	@RequestMapping(method = RequestMethod.POST, value = "/create")
+	@PreAuthorize("hasAuthority('MANAGER')")
 	public CustomerDTO createCustomer(
-			@RequestBody @JsonView(value = Views.UserView.Request.class) CustomerDTO customerDto) {
+			@RequestBody @JsonView(value = Views.UserView.Request.class) CustomerDTO customerDto)
+			throws AccessDeniedException {
 		CustomerDTO result = custService.createCustomer(customerDto);
 		return result;
 	}
 
 	@ApiOperation(value = "findCustomer", tags = "customer", response = Iterable.class)
 	@RequestMapping(method = RequestMethod.POST, value = "/get/{id}")
+	@PreAuthorize("hasAuthority('MANAGER')")
 	public CustomerDTO findCustomer(@PathVariable Long id) {
 		CustomerDTO result = custService.getById(id);
 		return result;
@@ -51,6 +59,7 @@ public class CustomerController {
 
 	@ApiOperation(value = "updateCustomer", tags = "customer", response = Iterable.class)
 	@RequestMapping(method = RequestMethod.POST, value = "/update/{id}")
+	@PreAuthorize("hasAuthority('MANAGER')")
 	public CustomerDTO updateCustomer(
 			@RequestBody @JsonView(value = Views.UserView.Request.class) CustomerDTO customerDto,
 			@PathVariable(required = true) Long id) {
@@ -60,9 +69,11 @@ public class CustomerController {
 	}
 
 	@ApiOperation(value = "deleteCustomer", tags = "customer", response = Iterable.class)
-	@RequestMapping(method = RequestMethod.POST, value = "/delete/{id}")
-	public void deleteCustomer(@PathVariable(required = true) Long id) {
+	@RequestMapping(method = RequestMethod.DELETE, value = "/delete/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ResponseEntity<?> deleteCustomer(@PathVariable(required = true) Long id) {
 		custService.deleteCustomer(id);
+		return new ResponseEntity<>("Deleted successfully!", HttpStatus.OK);
 	}
 
 }

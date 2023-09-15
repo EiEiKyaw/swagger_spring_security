@@ -9,7 +9,7 @@ public class Views {
 		public static interface Response extends Request {
 		}
 		
-		public static interface UpdateRequest extends Request {
+		public static interface Auth extends Request {
 		}
 	}
 
